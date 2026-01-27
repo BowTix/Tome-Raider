@@ -1,17 +1,17 @@
 
-import type { Book, BookDetail, SearchFilters, RecentChange } from '../types';
+import type { Book, BookDetail } from '../types';
 
 const API_BASE = "https://openlibrary.org";
 
 export const searchBooks = async (
     query: string,
     page: number = 1,
-    title: string,
-    author: string,
-    subject: string,
-    language: string,
-    publisher: string,
-    publish_year: [string, number]
+    title?: string,
+    author?: string,
+    subject?: string,
+    language?: string,
+    publisher?: string,
+    publish_year?: [string, number]
 
 ) : Promise<Book[]> => {
     if (query.length < 3) return []; // Optimisation: pas de recherche sous 3 caractères
@@ -52,6 +52,24 @@ export const searchAuthor = async (query : string) : Promise<string[]> => {
         return data.authors || [];
     } catch (error) {
         console.error("Erreur searchAuthor:", error);
+        return [];
+    }
+}
+
+export const getRecentChanges = async (number? : number) : Promise<Book[]> => {
+    try {
+        const response = await fetch(`${API_BASE}/recentchanges/add-book.json?limit=${encodeURIComponent(number || 10)}&bot=false`);
+        const data = await response.json();
+        const ans: any[] = []
+        for (const doc of data) {
+            for (const key in doc.changes) {
+                console.log(`${API_BASE}${doc.changes[key].key}.json`)
+                ans.push(await fetch(`${API_BASE}${doc.changes[key].key}.json`).then(res => res.json()))
+            }
+        }
+        return ans;
+    } catch (error) {
+        console.error("Erreur getRecentChanges:", error);
         return [];
     }
 }

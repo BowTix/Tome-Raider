@@ -26,8 +26,10 @@ export interface SearchFilters {
 
 export interface RecentChange {
     id: string;
-    kind: string;   // 'add-book', 'edit-book', etc.
+    kind: string;
+    title: string;
+    
     timestamp: string;
     comment: string;
-    changes: { key: string; revision: number }[];
+    covers?: number;
 }
