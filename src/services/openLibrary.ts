@@ -1,13 +1,42 @@
-// src/services/openLibrary.ts
+
 import type { Book, BookDetail, SearchFilters, RecentChange } from '../types';
 
 const API_BASE = "https://openlibrary.org";
 
-export const searchBooks = async (query: string): Promise<Book[]> => {
+export const searchBooks = async (
+    query: string,
+    page: number = 1,
+    title: string,
+    author: string,
+    subject: string,
+    language: string,
+    publisher: string,
+    publish_year: [string, number]
+
+) : Promise<Book[]> => {
     if (query.length < 3) return []; // Optimisation: pas de recherche sous 3 caractères
 
     try {
-        const response = await fetch(`${API_BASE}/search.json?q=${encodeURIComponent(query)}&limit=20&fields=key,title,author_name,cover_i,first_publish_year`);
+        let url = `${API_BASE}/search.json?q=${encodeURIComponent(query)}&page=${encodeURIComponent(page)}`;
+        if (title) {
+            url += `&title=${encodeURIComponent(title)}`;
+        }
+        if (author) {
+            url += `&author=${encodeURIComponent(author)}`;
+        }
+        if (subject) {
+            url += `&subject=${encodeURIComponent(subject)}`;
+        }
+        if (language) {
+            url += `&language=${encodeURIComponent(language)}`;
+        }
+        if (publisher) {
+            url += `&publisher=${encodeURIComponent(publisher)}`;
+        }
+        if (publish_year) {
+            url += `&publish_year=${encodeURIComponent(publish_year)}`;
+        }
+        const response = await fetch(url);
         const data = await response.json();
         return data.docs || [];
     } catch (error) {
@@ -16,22 +45,16 @@ export const searchBooks = async (query: string): Promise<Book[]> => {
     }
 };
 
-// 2. Recherche Avancée (Page dédiée)
-export const advancedSearch = async (filters: SearchFilters): Promise<Book[]> => {
-    const params = new URLSearchParams();
-    if (filters.title) params.append('title', filters.title);
-    if (filters.author) params.append('author', filters.author);
-    if (filters.subject) params.append('subject', filters.subject);
-
+export const searchAuthor = async (query : string) : Promise<string[]> => {
     try {
-        const response = await fetch(`${API_BASE}/search.json?${params.toString()}&limit=20`);
+        const response = await fetch(`${API_BASE}/search/authors.json?q=${encodeURIComponent(query)}`);
         const data = await response.json();
-        return data.docs || [];
+        return data.authors || [];
     } catch (error) {
-        console.error("Erreur advancedSearch:", error);
+        console.error("Erreur searchAuthor:", error);
         return [];
     }
-};
+}
 
 // 3. Détails d'un livre (Page détails)
 export const getBookDetails = async (id: string): Promise<BookDetail | null> => {
@@ -78,15 +101,3 @@ export const getBookDetails = async (id: string): Promise<BookDetail | null> => 
     return null;
 };
 
-// 4. Changements récents (Page d'accueil)
-export const getRecentChanges = async (): Promise<RecentChange[]> => {
-    try {
-        // On filtre pour n'avoir que les ajouts/modifs de livres pour que ce soit joli
-        const response = await fetch(`${API_BASE}/recentchanges.json?limit=10&bot=false`);
-        const data = await response.json();
-        return data || [];
-    } catch (error) {
-        console.error("Erreur getRecentChanges:", error);
-        return [];
-    }
-};
