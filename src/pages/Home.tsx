@@ -1,4 +1,7 @@
 import { Link } from 'react-router-dom';
+import BookCards from './BookCards.tsx'
+import {useEffect, useState} from "react";
+import {getRecentChanges, searchBooks} from "../services/openLibrary.ts";
 
 // Données factices pour l'affichage
 // Les couleurs correspondent au thème : 171717 (Surface), ffab21 (Primary), 2563eb (Secondary)
@@ -9,6 +12,25 @@ const HERO_BOOKS = [
 ];
 
 export default function Home() {
+    const [books, setBooks] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchBooks = async () => {
+            try {
+                const results = await searchBooks("Star Wars");
+                setBooks(results);
+                console.log(results);
+            } catch (error) {
+                console.error("Erreur OpenLibrary:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBooks();
+    }, []);
+
     return (
         <div className="min-h-screen bg-background text-foreground overflow-hidden font-sans transition-colors duration-300">
 
@@ -74,15 +96,8 @@ export default function Home() {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="group cursor-pointer">
-                            <div className="relative overflow-hidden bg-surface-highlight mb-4 border-2 border-transparent group-hover:border-primary transition-all">
-                                <img src={`https://placehold.co/400x600/171717/ffffff?text=ITEM+0${i}`} className="w-full transform group-hover:scale-110 transition duration-500" alt="Book"/>
-                                <div className="absolute top-2 right-2 bg-secondary text-white text-xs font-bold px-2 py-1 uppercase skew-x-[-10deg]">New</div>
-                            </div>
-                            <h3 className="font-bold uppercase text-lg leading-none group-hover:text-primary text-foreground">Cyber Culture</h3>
-                            <p className="text-neutral-500 text-sm font-bold uppercase">William Gibson</p>
-                        </div>
+                    {books.map((book, index) => (
+                        <BookCards key={book.key ?? index} book={book} i={index} />
                     ))}
                 </div>
             </section>
