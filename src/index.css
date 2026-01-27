@@ -3,6 +3,7 @@
 @theme {
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
+  --color-primary-dark: var(--primary-dark);
   --color-secondary: var(--secondary);
   --color-surface: var(--surface);
   --color-surface-highlight: var(--surface-highlight);
@@ -12,23 +13,25 @@
 
 :root {
   /* Mode Clair (Light) par défaut */
-  --primary: #ffab21; /* Orange demandé */
-  --primary-hover: #e6900b; /* Orange plus foncé pour le hover */
+  --primary: #ffab21;
+  --primary-hover: #e6900b;
+  --primary-dark: #ff8521;
   --secondary: #2563eb;
   --surface: #f3f4f6;
   --surface-highlight: #ffffff;
   --background: #ffffff;
-  --foreground: #0a0a0a;
+  --foreground: #212121;
 }
 
 .dark {
   /* Mode Sombre (Dark) */
-  --primary: #ffab21; /* Orange demandé */
+  --primary: #ffab21;
   --primary-hover: #e6900b;
+  --primary-dark: #ff8521;
   --secondary: #2563eb;
   --surface: #171717;
   --surface-highlight: #262626;
-  --background: #000000;
+  --background: #212121;
   --foreground: #ffffff;
 }
 
