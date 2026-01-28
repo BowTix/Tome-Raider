@@ -6,36 +6,13 @@ const API_BASE = "https://openlibrary.org";
 export const searchBooks = async (
     query: string,
     page: number = 1,
-    title?: string,
-    author?: string,
-    subject?: string,
-    language?: string,
-    publisher?: string,
-    publish_year?: [string, number]
+    limit: number = 10
 
 ) : Promise<Book[]> => {
     if (query.length < 3) return []; // Optimisation: pas de recherche sous 3 caractères
 
     try {
-        let url = `${API_BASE}/search.json?q=${encodeURIComponent(query)}&page=${encodeURIComponent(page)}`;
-        if (title) {
-            url += `&title=${encodeURIComponent(title)}`;
-        }
-        if (author) {
-            url += `&author=${encodeURIComponent(author)}`;
-        }
-        if (subject) {
-            url += `&subject=${encodeURIComponent(subject)}`;
-        }
-        if (language) {
-            url += `&language=${encodeURIComponent(language)}`;
-        }
-        if (publisher) {
-            url += `&publisher=${encodeURIComponent(publisher)}`;
-        }
-        if (publish_year) {
-            url += `&publish_year=${encodeURIComponent(publish_year)}`;
-        }
+        let url = `${API_BASE}/search.json?q=${encodeURIComponent(query)}&page=${encodeURIComponent(page)}&limit=${encodeURIComponent(limit)}`;
         const response = await fetch(url);
         const data = await response.json();
         return data.docs || [];
