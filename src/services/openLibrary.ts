@@ -1,5 +1,4 @@
-
-import type { Book, BookDetail } from '../types';
+import type { Book, BookDetail } from '../types.ts';
 
 const API_BASE = "https://openlibrary.org";
 
@@ -9,7 +8,7 @@ export const searchBooks = async (
     limit: number = 10
 
 ) : Promise<Book[]> => {
-    if (query.length < 3) return []; // Optimisation: pas de recherche sous 3 caractères
+    if (query.length < 3) return [];
 
     try {
         let url = `${API_BASE}/search.json?q=${encodeURIComponent(query)}&page=${encodeURIComponent(page)}&limit=${encodeURIComponent(limit)}`;
@@ -51,9 +50,7 @@ export const getRecentChanges = async (number? : number) : Promise<Book[]> => {
     }
 }
 
-// 3. Détails d'un livre (Page détails)
 export const getBookDetails = async (id: string): Promise<BookDetail | null> => {
-    // Normalisation minimale et génération de variantes à tester
     const raw = (id || '').trim();
     const variants: string[] = [];
 
@@ -66,11 +63,9 @@ export const getBookDetails = async (id: string): Promise<BookDetail | null> => 
     } else if (/^OL\d+W$/i.test(raw)) {
         variants.push(`/works/${raw}`);
     } else if (/^\d+$/.test(raw)) {
-        // id purement numérique : tenter tal que, puis tenter forme OL{num}W
         variants.push(`/works/${raw}`);
         variants.push(`/works/OL${raw}W`);
     } else {
-        // fallback : essayer comme work, puis books (édition), puis préfixer OL
         variants.push(`/works/${raw}`);
         variants.push(`/books/${raw}`);
         variants.push(`/works/OL${raw}W`);
@@ -88,7 +83,6 @@ export const getBookDetails = async (id: string): Promise<BookDetail | null> => 
             return json as BookDetail;
         } catch (err) {
             console.debug('getBookDetails: erreur fetch', v, err);
-            // continuer les variantes
         }
     }
 
