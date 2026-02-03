@@ -39,8 +39,10 @@ export const getRecentChanges = async (number? : number) : Promise<Book[]> => {
         const ans: any[] = []
         for (const doc of data) {
             for (const key in doc.changes) {
-                if (doc.changes[key].key.startsWith('/works/')) {
-                    ans.push(await getBookDetails(doc.changes[key].key)) ;
+                const changeKey = doc.changes[key]?.key;
+                if (changeKey.startsWith('/books/')) {
+                    ans.push(await getBookDetails(changeKey));
+                    break
                 }
             }
         }
@@ -66,6 +68,8 @@ export const getBookDetails = async (id: string): Promise<BookDetail | null> => 
     } else if (/^\d+$/.test(raw)) {
         variants.push(`/works/${raw}`);
         variants.push(`/works/OL${raw}W`);
+    }else if (raw.startsWith('/books/')) {
+        variants.push(raw);
     } else {
         variants.push(`/works/${raw}`);
         variants.push(`/books/${raw}`);
@@ -75,13 +79,22 @@ export const getBookDetails = async (id: string): Promise<BookDetail | null> => 
     for (const v of variants) {
         try {
             console.debug('getBookDetails: tentative fetch', v);
-            const response = await fetch(`${API_BASE}${v}.json`);
+            const response = await fetch(`${API_BASE}${v}.json?fields=title,description,subjects,subject_places,subject_people,links,authors,first_publish_date,publish_date,languages,covers`);
+            console.log(response);
             if (!response.ok) {
                 console.debug('getBookDetails: réponse non ok', v, response.status);
                 continue;
             }
             const json = await response.json();
-            return json as BookDetail;
+            if (json.works) {
+                console.log("test");
+                const res = await fetch(`${API_BASE}${json.works[0].key}.json?fields=title,description,subjects,subject_places,subject_people,links,authors,first_publish_date,publish_date,languages,covers`);
+                const author = await res.json();
+                json.authors = author.authors;
+                return json as BookDetail;
+            } else {
+                return json as BookDetail;
+            }
         } catch (err) {
             console.debug('getBookDetails: erreur fetch', v, err);
         }

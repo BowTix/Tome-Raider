@@ -1,7 +1,9 @@
+// File: `src/pages/Home.tsx`
 import { Link } from 'react-router-dom';
-import BookCards from './BookCards.tsx'
-import {useEffect, useState} from "react";
-import {getRecentChanges, searchBooks} from "../services/openLibrary.ts";
+import BookCards from './BookCards.tsx';
+import { useEffect, useState } from 'react';
+import { getRecentChanges } from '../services/openLibrary.ts';
+import type {Book} from "../types.ts";
 
 const HERO_BOOKS = [
     { id: 1, cover: "https://placehold.co/300x450/171717/ffab21?text=MIND&font=roboto" },
@@ -10,35 +12,38 @@ const HERO_BOOKS = [
 ];
 
 export default function Home() {
-    const [books, setBooks] = useState<any[]>([]);
+    const [books, setBooks] = useState<Book[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let mounted = true;
         const fetchBooks = async () => {
+            setLoading(true);
             try {
-                const results = await getRecentChanges(10);
-                setBooks(results);
-                console.log(results);
+                const results = await getRecentChanges(12);
+                if (!mounted) return;
+                setBooks(Array.isArray(results) ? results : []);
             } catch (error) {
                 console.error("Erreur OpenLibrary:", error);
+                if (mounted) setBooks([]);
             } finally {
-                setLoading(false);
+                if (mounted) setLoading(false);
             }
         };
 
         fetchBooks();
+        return () => { mounted = false; };
     }, []);
+
+    const displayBooks = !loading && books.length > 0 ? books : (!loading ? [] : null);
 
     return (
         <div className="min-h-screen bg-background text-foreground overflow-hidden font-sans transition-colors duration-300">
-
             <section className="relative pt-12 pb-20 px-4">
-
                 <div className="absolute top-0 right-[-10%] w-[50%] h-[600px] bg-secondary transform rotate-12 opacity-20 blur-[100px] -z-10"></div>
                 <div className="absolute bottom-0 left-[-10%] w-[40%] h-[400px] bg-primary transform -rotate-12 opacity-10 blur-[100px] -z-10"></div>
 
                 <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-
                     <div className="space-y-6 z-10">
                         <h1 className="text-6xl md:text-8xl font-black uppercase leading-[0.9] tracking-tighter italic">
                             <span className="block text-foreground">Unleash</span>
@@ -88,8 +93,14 @@ export default function Home() {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    {books.map((book, index) => (
-                        <BookCards key={book.key ?? index} book={book} i={index} />
+                    {loading && (
+                        Array.from({ length: 12 }).map((_, i) => (
+                            <div key={`skeleton-${i}`} className="w-full h-56 rounded bg-surface-highlight animate-pulse" />
+                        ))
+                    )}
+
+                    {!loading && displayBooks && displayBooks.map((book: any, index: number) => (
+                        <BookCards key={book.key ?? book.id ?? index} book={book} />
                     ))}
                 </div>
             </section>

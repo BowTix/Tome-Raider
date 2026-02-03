@@ -6,15 +6,24 @@ export interface Book {
     first_publish_year?: number;
     number_of_pages_median?: number;
     subject?: string[];
+    covers?: number[];
 }
 
 export interface BookDetail extends Book {
     description?: string | { value: string };
-    covers?: number[];
     subject_places?: string[];
     subject_people?: string[];
     links?: { title: string; url: string }[];
+    authors?: { author: { key: string; name?: string } }[];
+    first_publish_date?: string;
+    publish_date?: string;
+    languages?: string[];
 }
+export type WikiResult = {
+    extract?: string;
+    thumbnail?: string;
+    url?: string;
+} | null;
 
 export interface SearchFilters {
     title?: string;
