@@ -1,4 +1,4 @@
-import type { Book, BookDetail } from '../types.ts';
+import type { Book, BookDetail, SearchFilters } from '../types.ts';
 
 const API_BASE = "https://openlibrary.org";
 
@@ -17,6 +17,24 @@ export const searchBooks = async (
         return data.docs || [];
     } catch (error) {
         console.error("Erreur searchBooks:", error);
+        return [];
+    }
+};
+
+export const advancedSearch = async (filters: SearchFilters, page: number = 1, limit: number = 20): Promise<Book[]> => {
+    const params = new URLSearchParams();
+    if (filters.title) params.append('title', filters.title);
+    if (filters.author) params.append('author', filters.author);
+    if (filters.subject) params.append('subject', filters.subject);
+
+    if (!filters.title && !filters.author && !filters.subject) return [];
+
+    try {
+        const response = await fetch(`${API_BASE}/search.json?${params.toString()}&page=${page}&limit=${limit}`);
+        const data = await response.json();
+        return data.docs || [];
+    } catch (error) {
+        console.error("Erreur advancedSearch:", error);
         return [];
     }
 };
@@ -90,4 +108,3 @@ export const getBookDetails = async (id: string): Promise<BookDetail | null> => 
     console.warn('getBookDetails: aucune variante trouvée pour id', id);
     return null;
 };
-
