@@ -13,24 +13,24 @@
 
 :root {
   /* Mode Clair (Light) par défaut */
-  --primary: #ffab21;
-  --primary-hover: #e6900b;
-  --primary-dark: #ff8521;
-  --secondary: #2563eb;
-  --surface: #f3f4f6;
-  --surface-highlight: #ffffff;
-  --background: #ffffff;
+  --primary: #0036ab;
+  --primary-hover: #009cff;
+  --primary-dark: #002a88;
+  --secondary: #ffb700;
+  --surface: #eeeeee;
+  --surface-highlight: #dadada;
+  --background: #eeeeee;
   --foreground: #212121;
 }
 
 .dark {
   /* Mode Sombre (Dark) */
-  --primary: #ffab21;
-  --primary-hover: #e6900b;
-  --primary-dark: #ff8521;
-  --secondary: #2563eb;
+  --primary: #009cff;
+  --primary-hover: #0083cc;
+  --primary-dark: #0036ab;
+  --secondary: #fff200;
   --surface: #171717;
-  --surface-highlight: #262626;
+  --surface-highlight: #313131;
   --background: #212121;
   --foreground: #ffffff;
 }
@@ -41,4 +41,49 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.3s, color 0.3s;
+}
+
+/* --- EFFETS FUTURISTES --- */
+
+.text-stroke {
+  -webkit-text-stroke: 1px var(--foreground);
+  color: transparent;
+}
+
+.bg-tech-grid {
+  background-size: 40px 40px;
+  background-image:
+          linear-gradient(to right, color-mix(in srgb, var(--foreground), transparent 95%) 1px, transparent 1px),
+          linear-gradient(to bottom, color-mix(in srgb, var(--foreground), transparent 95%) 1px, transparent 1px);
+  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+/* --- SCROLLBAR --- */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+  border-left: 1px solid var(--surface-highlight);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border: 2px solid var(--background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
 }
