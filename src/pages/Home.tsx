@@ -16,7 +16,7 @@ export default function Home() {
     useEffect(() => {
         const fetchBooks = async () => {
             try {
-                const results = await searchBooks("Star Wars");
+                const results = await getRecentChanges(10);
                 setBooks(results);
                 console.log(results);
             } catch (error) {

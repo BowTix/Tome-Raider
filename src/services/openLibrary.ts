@@ -39,8 +39,9 @@ export const getRecentChanges = async (number? : number) : Promise<Book[]> => {
         const ans: any[] = []
         for (const doc of data) {
             for (const key in doc.changes) {
-                console.log(`${API_BASE}${doc.changes[key].key}.json`)
-                ans.push(await fetch(`${API_BASE}${doc.changes[key].key}.json`).then(res => res.json()))
+                if (doc.changes[key].key.startsWith('/works/')) {
+                    ans.push(await getBookDetails(doc.changes[key].key)) ;
+                }
             }
         }
         return ans;
