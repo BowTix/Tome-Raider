@@ -6,10 +6,10 @@ export default function BookCards(
 ) {
 
     const bookId = book.key;
-
-    const coverUrl = book.covers && book.covers.length > 0
-        ? `https://covers.openlibrary.org/b/id/${book.covers[0]}-M.jpg`
-        : "https://placehold.co/400x600/171717/ffab21?text=NO+COVER";
+    const coverId = (book.covers && book.covers.length > 0) ? book.covers[0] : book.cover_i;
+    const coverUrl = coverId
+        ? `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`
+        : "https://placehold.co/400x600/171717/eeeeee?text=NO+COVER";
 
     return (
         <Link to={`${bookId}`} className="group cursor-pointer block relative">
